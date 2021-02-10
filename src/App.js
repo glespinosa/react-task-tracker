@@ -1,25 +1,49 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect, useContext, useReducer } from 'react'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
+import Header from './components/Header'
+import Tasks from './components/Tasks'
+import AddTask from './components/AddTask'
+import About from './components/About'
+import Footer from './components/Footer'
+import { TaskContext } from './context/TaskContext'
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [tasks, { addTask, retrieveTasks }] = useContext(TaskContext)
+
+    const [showAddTask, setShowAddTask] = useState(false)
+    useEffect(() => {
+        retrieveTasks()
+    }, [])
+
+    return (
+        <Router>
+            <div className='container'>
+                <Header
+                    isShow={showAddTask}
+                    onClick={() => setShowAddTask(!showAddTask)}
+                    title='Task Tracker'
+                />
+
+                <Route
+                    path='/'
+                    exact
+                    render={(props) => (
+                        <>
+                            {showAddTask && <AddTask addTask={addTask} />}
+                            {tasks.length > 0 ? (
+                                <Tasks tasks={tasks} />
+                            ) : (
+                                'No tasks to show'
+                            )}
+                        </>
+                    )}
+                />
+
+                <Route path='/about' component={About} />
+                <Footer />
+            </div>
+        </Router>
+    )
 }
 
-export default App;
+export default App
